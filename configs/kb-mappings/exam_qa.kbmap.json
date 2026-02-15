@@ -1,0 +1,30 @@
+{
+  "scenario_id": "exam_qa",
+  "version": "1.0.0",
+  "updated_at": "2026-02-15T00:00:00.000Z",
+  "overrides": {
+    "default_kb_ids": ["kb_exam_global"],
+    "sub_type_kb_map": {
+      "figure_reasoning": ["kb_exam_figure"],
+      "xingce": ["kb_exam_xingce"],
+      "logic": ["kb_exam_logic"],
+      "language": ["kb_exam_language"],
+      "common_knowledge": ["kb_exam_common"],
+      "data_analysis": ["kb_exam_data_rules"]
+    }
+  },
+  "env_overrides": {
+    "staging": {
+      "default_kb_ids": ["kb_exam_global"],
+      "sub_type_kb_map": {
+        "figure_reasoning": ["kb_exam_figure"],
+        "xingce": ["kb_exam_xingce"],
+        "logic": ["kb_exam_logic"],
+        "language": ["kb_exam_language"],
+        "common_knowledge": ["kb_exam_common"],
+        "data_analysis": ["kb_exam_data_rules"]
+      }
+    }
+  },
+  "tenant_overrides": {}
+}

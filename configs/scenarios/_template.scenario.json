@@ -1,0 +1,89 @@
+{
+  "scenario_id": "<scenario_id>",
+  "name": "<scenario_name>",
+  "enabled": true,
+  "version": "1.0.0",
+  "input_schema": {
+    "required_fields": [],
+    "allow_text": true,
+    "allow_images": false,
+    "allow_attachments": false,
+    "max_images": 0,
+    "max_text_length": 8000
+  },
+  "workflow_binding": {
+    "provider": "dify",
+    "workflow_id": "",
+    "fallback_workflow_id": "",
+    "sub_type_routes": {}
+  },
+  "sub_type_profiles": {},
+  "knowledge_policy": {
+    "enabled": false,
+    "mode": "off",
+    "default_kb_ids": [],
+    "sub_type_kb_map": {},
+    "top_k": 5,
+    "rerank": false,
+    "max_context_chars": 12000
+  },
+  "quality_policy": {
+    "confidence_threshold": 0.7,
+    "enable_second_pass": false,
+    "validation_retry_on_fail": true,
+    "max_retries": 0,
+    "strict_output_validation": true,
+    "quality_tiers": {
+      "fast": {
+        "confidence_threshold": 0.65,
+        "max_retries": 0
+      },
+      "balanced": {
+        "confidence_threshold": 0.7,
+        "max_retries": 1
+      },
+      "strict": {
+        "confidence_threshold": 0.8,
+        "max_retries": 2
+      }
+    }
+  },
+  "latency_budget": {
+    "total_ms": 8000,
+    "stage_budget_ms": {
+      "routing": 300,
+      "retrieval": 1500,
+      "reasoning": 4500,
+      "postprocess": 700,
+      "buffer": 1000
+    },
+    "on_timeout": "return_best_effort"
+  },
+  "output_schema": {
+    "required_fields": [
+      "scenario_id",
+      "sub_type",
+      "evidence",
+      "confidence",
+      "trace_id",
+      "answer"
+    ],
+    "field_types": {
+      "scenario_id": "string",
+      "sub_type": "string",
+      "evidence": "array<string>",
+      "confidence": "number",
+      "trace_id": "string",
+      "answer": "string"
+    }
+  },
+  "output_constraints": {
+    "defaults": {
+      "mode": "text_or_option",
+      "min_evidence": 1,
+      "require_evidence": true,
+      "enforce_sub_type_match": true
+    },
+    "sub_type_rules": {}
+  }
+}

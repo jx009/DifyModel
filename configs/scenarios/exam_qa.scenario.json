@@ -1,0 +1,327 @@
+{
+  "scenario_id": "exam_qa",
+  "name": "Exam Question Answering",
+  "enabled": true,
+  "version": "1.2.0",
+  "input_schema": {
+    "required_fields": [
+      "images"
+    ],
+    "allow_text": true,
+    "allow_images": true,
+    "allow_attachments": false,
+    "max_images": 5,
+    "max_text_length": 8000
+  },
+  "workflow_binding": {
+    "provider": "dify",
+    "workflow_id": "wf_exam_qa_main",
+    "fallback_workflow_id": "wf_exam_qa_fallback",
+    "sub_type_routes": {
+      "figure_reasoning": "wf_exam_figure",
+      "xingce": "wf_exam_xingce",
+      "logic": "wf_exam_logic",
+      "language": "wf_exam_language",
+      "data_analysis": "wf_exam_data",
+      "common_knowledge": "wf_exam_common"
+    }
+  },
+  "sub_type_profiles": {
+    "figure_reasoning": {
+      "display_name": "图推题",
+      "workflow_id": "wf_exam_figure",
+      "classifier_hints": {
+        "keywords": [
+          "图推",
+          "图形推理",
+          "旋转",
+          "折叠",
+          "对称",
+          "图案"
+        ],
+        "require_images": true,
+        "prefer_images": true,
+        "image_only_default": true
+      },
+      "workflow_guidance": {
+        "solving_steps": [
+          "识别题干与所有候选图形的结构元素",
+          "按位置变化、数量变化、对称与旋转关系建立规律假设",
+          "用每个候选项逐一验证规律并排除冲突选项"
+        ],
+        "prompt_focus": [
+          "优先分析图形之间的一致变换",
+          "必须输出排除过程而不是只给结论"
+        ],
+        "answer_constraints": [
+          "给出唯一选项字母",
+          "说明关键规律和反例"
+        ]
+      }
+    },
+    "xingce": {
+      "display_name": "行测题",
+      "workflow_id": "wf_exam_xingce",
+      "classifier_hints": {
+        "keywords": [
+          "行测",
+          "行政职业能力测验",
+          "数量关系",
+          "判断推理",
+          "言语理解",
+          "资料分析"
+        ],
+        "prefer_images": true
+      },
+      "workflow_guidance": {
+        "solving_steps": [
+          "先确认题型分支（数量关系/判断推理/言语理解/资料分析）",
+          "根据分支调用对应解题模板并计算或推理",
+          "输出最终答案并附关键步骤"
+        ],
+        "prompt_focus": [
+          "避免仅凭直觉作答",
+          "结论前必须有步骤化推导"
+        ],
+        "answer_constraints": [
+          "答案与步骤保持一致",
+          "涉及计算时给出核心中间量"
+        ]
+      }
+    },
+    "logic": {
+      "display_name": "逻辑判断",
+      "classifier_hints": {
+        "keywords": [
+          "逻辑",
+          "真假",
+          "削弱",
+          "加强",
+          "论证"
+        ]
+      },
+      "workflow_guidance": {
+        "solving_steps": [
+          "定位论点、论据与假设",
+          "判断选项对论证强弱的影响",
+          "排除无关或方向错误选项"
+        ],
+        "prompt_focus": [
+          "优先评估论证关系",
+          "避免语义相近误判"
+        ],
+        "answer_constraints": [
+          "给出最优选项和一句理由"
+        ]
+      }
+    },
+    "language": {
+      "display_name": "言语理解",
+      "classifier_hints": {
+        "keywords": [
+          "言语",
+          "主旨",
+          "填空",
+          "病句",
+          "语句排序"
+        ]
+      },
+      "workflow_guidance": {
+        "solving_steps": [
+          "先抽取题干核心语义",
+          "比较选项语义与语境匹配度",
+          "排除逻辑或语义冲突选项"
+        ],
+        "prompt_focus": [
+          "关注语境和语义一致性"
+        ],
+        "answer_constraints": [
+          "给出主旨或关键词依据"
+        ]
+      }
+    },
+    "data_analysis": {
+      "display_name": "资料分析",
+      "classifier_hints": {
+        "keywords": [
+          "资料分析",
+          "同比",
+          "环比",
+          "增长率",
+          "百分点",
+          "数据表"
+        ]
+      },
+      "workflow_guidance": {
+        "solving_steps": [
+          "提取题目所需数据字段",
+          "列出公式并代入关键数值",
+          "比较选项并验证量级合理性"
+        ],
+        "prompt_focus": [
+          "优先使用标准公式",
+          "控制计算误差"
+        ],
+        "answer_constraints": [
+          "给出关键计算式"
+        ]
+      }
+    },
+    "common_knowledge": {
+      "display_name": "常识判断",
+      "classifier_hints": {
+        "keywords": [
+          "常识",
+          "法律",
+          "历史",
+          "地理",
+          "科技",
+          "时政"
+        ]
+      },
+      "workflow_guidance": {
+        "solving_steps": [
+          "识别知识点所属领域",
+          "用事实依据逐项排除",
+          "输出最稳妥结论"
+        ],
+        "prompt_focus": [
+          "优先使用确定性知识"
+        ],
+        "answer_constraints": [
+          "避免无依据猜测"
+        ]
+      }
+    }
+  },
+  "knowledge_policy": {
+    "enabled": true,
+    "mode": "conditional",
+    "default_kb_ids": [],
+    "sub_type_kb_map": {},
+    "top_k": 5,
+    "rerank": true,
+    "max_context_chars": 12000
+  },
+  "quality_policy": {
+    "confidence_threshold": 0.72,
+    "enable_second_pass": true,
+    "validation_retry_on_fail": true,
+    "max_retries": 1,
+    "strict_output_validation": true,
+    "quality_tiers": {
+      "fast": {
+        "confidence_threshold": 0.68,
+        "max_retries": 0
+      },
+      "balanced": {
+        "confidence_threshold": 0.72,
+        "max_retries": 1
+      },
+      "strict": {
+        "confidence_threshold": 0.8,
+        "max_retries": 2
+      }
+    },
+    "sub_type_overrides": {
+      "figure_reasoning": {
+        "confidence_threshold": 0.8,
+        "max_retries": 2,
+        "retry_mode": "fallback_workflow",
+        "retry_on_validation_fail": true
+      },
+      "logic": {
+        "confidence_threshold": 0.74,
+        "max_retries": 1,
+        "retry_mode": "same_workflow"
+      },
+      "language": {
+        "confidence_threshold": 0.72,
+        "max_retries": 1,
+        "retry_mode": "same_workflow"
+      },
+      "data_analysis": {
+        "confidence_threshold": 0.78,
+        "max_retries": 2,
+        "retry_mode": "fallback_workflow",
+        "retry_on_validation_fail": true
+      },
+      "xingce": {
+        "confidence_threshold": 0.76,
+        "max_retries": 1,
+        "retry_mode": "fallback_workflow",
+        "retry_on_validation_fail": true
+      },
+      "common_knowledge": {
+        "confidence_threshold": 0.75,
+        "max_retries": 1,
+        "retry_mode": "same_workflow"
+      }
+    }
+  },
+  "latency_budget": {
+    "total_ms": 8000,
+    "stage_budget_ms": {
+      "routing": 300,
+      "retrieval": 1800,
+      "reasoning": 4500,
+      "postprocess": 800,
+      "buffer": 600
+    },
+    "on_timeout": "return_best_effort"
+  },
+  "output_schema": {
+    "required_fields": [
+      "scenario_id",
+      "sub_type",
+      "answer",
+      "evidence",
+      "confidence",
+      "trace_id"
+    ],
+    "field_types": {
+      "scenario_id": "string",
+      "sub_type": "string",
+      "answer": "string",
+      "evidence": "array<string>",
+      "confidence": "number",
+      "trace_id": "string",
+      "latency_ms": "number",
+      "model_path": "array<string>"
+    }
+  },
+  "output_constraints": {
+    "defaults": {
+      "mode": "text_or_option",
+      "min_evidence": 1,
+      "require_evidence": true,
+      "enforce_sub_type_match": true
+    },
+    "sub_type_rules": {
+      "figure_reasoning": {
+        "mode": "single_option",
+        "min_evidence": 2
+      },
+      "xingce": {
+        "mode": "number_or_option",
+        "min_evidence": 2
+      },
+      "logic": {
+        "mode": "single_option",
+        "min_evidence": 2
+      },
+      "language": {
+        "mode": "single_option",
+        "min_evidence": 2
+      },
+      "data_analysis": {
+        "mode": "number_or_option",
+        "min_evidence": 2
+      },
+      "common_knowledge": {
+        "mode": "single_option",
+        "min_evidence": 1
+      }
+    }
+  }
+}

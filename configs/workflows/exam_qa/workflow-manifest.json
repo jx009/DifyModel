@@ -1,0 +1,63 @@
+{
+  "scenario_id": "exam_qa",
+  "version": "1.0.0",
+  "workflows": [
+    {
+      "sub_type": "figure_reasoning",
+      "display_name": "图推题",
+      "workflow_id": "wf_exam_figure",
+      "fallback_workflow_id": "wf_exam_qa_fallback",
+      "dataset_ids": ["kb_exam_figure", "kb_exam_global"],
+      "prompt_template_file": "figure_reasoning.prompt.md"
+    },
+    {
+      "sub_type": "xingce",
+      "display_name": "行测题",
+      "workflow_id": "wf_exam_xingce",
+      "fallback_workflow_id": "wf_exam_qa_fallback",
+      "dataset_ids": ["kb_exam_xingce", "kb_exam_global"],
+      "prompt_template_file": "xingce.prompt.md"
+    },
+    {
+      "sub_type": "logic",
+      "display_name": "逻辑判断",
+      "workflow_id": "wf_exam_logic",
+      "fallback_workflow_id": "wf_exam_qa_fallback",
+      "dataset_ids": ["kb_exam_logic", "kb_exam_global"],
+      "prompt_template_file": "logic.prompt.md"
+    },
+    {
+      "sub_type": "language",
+      "display_name": "言语理解",
+      "workflow_id": "wf_exam_language",
+      "fallback_workflow_id": "wf_exam_qa_fallback",
+      "dataset_ids": ["kb_exam_language", "kb_exam_global"],
+      "prompt_template_file": "language.prompt.md"
+    },
+    {
+      "sub_type": "data_analysis",
+      "display_name": "资料分析",
+      "workflow_id": "wf_exam_data",
+      "fallback_workflow_id": "wf_exam_qa_fallback",
+      "dataset_ids": ["kb_exam_data_rules", "kb_exam_global"],
+      "prompt_template_file": "data_analysis.prompt.md"
+    },
+    {
+      "sub_type": "common_knowledge",
+      "display_name": "常识判断",
+      "workflow_id": "wf_exam_common",
+      "fallback_workflow_id": "wf_exam_qa_fallback",
+      "dataset_ids": ["kb_exam_common", "kb_exam_global"],
+      "prompt_template_file": "common_knowledge.prompt.md"
+    }
+  ],
+  "output_contract": {
+    "required_fields": ["answer", "evidence", "confidence", "sub_type"],
+    "field_types": {
+      "answer": "string",
+      "evidence": "array<string>",
+      "confidence": "number",
+      "sub_type": "string"
+    }
+  }
+}

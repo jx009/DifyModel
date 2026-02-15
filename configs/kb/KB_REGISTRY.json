@@ -1,0 +1,90 @@
+{
+  "version": "1.0.0",
+  "updated_at": "2026-02-15T00:00:00.000Z",
+  "items": [
+    {
+      "kb_id": "kb_exam_global",
+      "domain": "exam",
+      "name": "Exam Global Knowledge",
+      "kb_version": "2026-02-15",
+      "status": "active",
+      "description": "Default exam knowledge base used for most subtypes.",
+      "source": "dify",
+      "tags": ["exam", "global"],
+      "created_at": "2026-02-15T00:00:00.000Z",
+      "updated_at": "2026-02-15T00:00:00.000Z"
+    },
+    {
+      "kb_id": "kb_exam_figure",
+      "domain": "exam",
+      "name": "Exam Figure Reasoning",
+      "kb_version": "2026-02-15",
+      "status": "active",
+      "description": "Knowledge base for figure reasoning patterns and transforms.",
+      "source": "dify",
+      "tags": ["exam", "figure_reasoning"],
+      "created_at": "2026-02-15T00:00:00.000Z",
+      "updated_at": "2026-02-15T00:00:00.000Z"
+    },
+    {
+      "kb_id": "kb_exam_xingce",
+      "domain": "exam",
+      "name": "Exam Xingce",
+      "kb_version": "2026-02-15",
+      "status": "active",
+      "description": "Knowledge base for xingce mixed exam skills.",
+      "source": "dify",
+      "tags": ["exam", "xingce"],
+      "created_at": "2026-02-15T00:00:00.000Z",
+      "updated_at": "2026-02-15T00:00:00.000Z"
+    },
+    {
+      "kb_id": "kb_exam_logic",
+      "domain": "exam",
+      "name": "Exam Logic",
+      "kb_version": "2026-02-15",
+      "status": "active",
+      "description": "Knowledge base for logical reasoning and argument analysis.",
+      "source": "dify",
+      "tags": ["exam", "logic"],
+      "created_at": "2026-02-15T00:00:00.000Z",
+      "updated_at": "2026-02-15T00:00:00.000Z"
+    },
+    {
+      "kb_id": "kb_exam_language",
+      "domain": "exam",
+      "name": "Exam Language",
+      "kb_version": "2026-02-15",
+      "status": "active",
+      "description": "Knowledge base for language comprehension and verbal questions.",
+      "source": "dify",
+      "tags": ["exam", "language"],
+      "created_at": "2026-02-15T00:00:00.000Z",
+      "updated_at": "2026-02-15T00:00:00.000Z"
+    },
+    {
+      "kb_id": "kb_exam_common",
+      "domain": "exam",
+      "name": "Exam Common Knowledge",
+      "kb_version": "2026-02-15",
+      "status": "active",
+      "description": "Knowledge base for common knowledge questions.",
+      "source": "dify",
+      "tags": ["exam", "common_knowledge"],
+      "created_at": "2026-02-15T00:00:00.000Z",
+      "updated_at": "2026-02-15T00:00:00.000Z"
+    },
+    {
+      "kb_id": "kb_exam_data_rules",
+      "domain": "exam",
+      "name": "Exam Data Analysis Rules",
+      "kb_version": "2026-02-15",
+      "status": "active",
+      "description": "Formula/rules for data analysis.",
+      "source": "dify",
+      "tags": ["exam", "data_analysis"],
+      "created_at": "2026-02-15T00:00:00.000Z",
+      "updated_at": "2026-02-15T00:00:00.000Z"
+    }
+  ]
+}

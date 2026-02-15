@@ -1,10 +1,19 @@
 {
-  "name": "${PROJECT_NAME}",
+  "name": "dify-model",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "description": "Production-oriented AI orchestration platform",
+  "main": "src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node src/server.js",
+    "start": "node src/server.js",
+    "test": "npm run test:smoke",
+    "check:workflow": "node scripts/validate-workflow-manifest.js",
+    "test:smoke": "bash scripts/smoke-test.sh",
+    "test:smoke:docker": "BASE_URL=http://127.0.0.1:8080 bash scripts/smoke-test.sh",
+    "test:smoke:dify": "EXPECT_PROVIDER=dify bash scripts/smoke-test.sh"
   },
-  "private": true
+  "dependencies": {
+    "ajv": "^8.18.0"
+  }
 }
