@@ -620,11 +620,16 @@ async function handleAdminGetConfig(req, res, traceId) {
   const guard = adminGuard(req, res, traceId)
   if (!guard.ok) return
 
+  const scenarioIdRaw = req.url.includes('?')
+    ? new URL(req.url, `http://${req.headers.host || 'localhost'}`).searchParams.get('scenario_id')
+    : null
+  const scenarioId = typeof scenarioIdRaw === 'string' && scenarioIdRaw.trim() ? scenarioIdRaw.trim() : 'exam_qa'
+
   sendJson(
     res,
     200,
     successEnvelope(traceId, {
-      admin_config: getAdminEffectiveConfigView({ adminStore: adminConfigStore }),
+      admin_config: getAdminEffectiveConfigView({ adminStore: adminConfigStore, registry: scenarioRegistry, scenarioId }),
       scenario_ids: scenarioRegistry.listIds()
     })
   )

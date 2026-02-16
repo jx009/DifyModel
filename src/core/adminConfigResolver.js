@@ -1,5 +1,7 @@
 const { ScenarioRegistry } = require('../config/scenarioRegistry')
 const { AdminConfigStore } = require('./adminConfigStore')
+const fs = require('fs')
+const path = require('path')
 
 function isObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
@@ -137,17 +139,67 @@ function resolveScenarioById(scenarioId, options = {}) {
 }
 
 function getAdminEffectiveConfigView(options = {}) {
+  const registry = options.registry || new ScenarioRegistry()
+  if (!options.registry) {
+    registry.load()
+  }
+
+  const scenarioId = typeof options.scenarioId === 'string' && options.scenarioId.trim() ? options.scenarioId.trim() : 'exam_qa'
+  const baseScenario = registry.get(scenarioId)
   const adminStore = options.adminStore || new AdminConfigStore()
   const adminConfig = adminStore.getConfig()
+  const resolvedScenario = baseScenario ? resolveScenarioWithAdminOverrides(baseScenario, adminConfig) : null
+
+  const effectiveRoutes = resolvedScenario?.workflow_binding
+    ? {
+        main_workflow_id: resolvedScenario.workflow_binding.workflow_id || null,
+        fallback_workflow_id: resolvedScenario.workflow_binding.fallback_workflow_id || null,
+        sub_type_routes: isObject(resolvedScenario.workflow_binding.sub_type_routes) ? resolvedScenario.workflow_binding.sub_type_routes : {}
+      }
+    : isObject(adminConfig.routes)
+      ? adminConfig.routes
+      : { main_workflow_id: null, fallback_workflow_id: null, sub_type_routes: {} }
+
+  const defaultPrompts = {}
+  if (baseScenario && baseScenario.scenario_id) {
+    const manifestPath = path.join(process.cwd(), 'configs', 'workflows', baseScenario.scenario_id, 'workflow-manifest.json')
+    try {
+      if (fs.existsSync(manifestPath)) {
+        const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'))
+        const workflows = Array.isArray(manifest.workflows) ? manifest.workflows : []
+        for (const wf of workflows) {
+          const workflowId = typeof wf.workflow_id === 'string' ? wf.workflow_id.trim() : ''
+          const promptFile = typeof wf.prompt_template_file === 'string' ? wf.prompt_template_file.trim() : ''
+          if (!workflowId || !promptFile) continue
+          const promptPath = path.join(process.cwd(), 'configs', 'workflows', baseScenario.scenario_id, promptFile)
+          if (!fs.existsSync(promptPath)) continue
+          const content = fs.readFileSync(promptPath, 'utf8')
+          defaultPrompts[workflowId] = {
+            version: 0,
+            content,
+            updated_at: null,
+            source: 'default_file'
+          }
+        }
+      }
+    } catch (_error) {
+      // ignore default prompt parse failure
+    }
+  }
+
+  const overridePrompts = isObject(adminConfig.workflow_prompts) ? adminConfig.workflow_prompts : {}
+  const mergedPrompts = { ...defaultPrompts, ...overridePrompts }
+
   return {
     meta: {
       updated_at: adminConfig.updated_at || null,
-      updated_by: adminConfig.updated_by || null
+      updated_by: adminConfig.updated_by || null,
+      scenario_id: scenarioId
     },
-    routes: isObject(adminConfig.routes) ? adminConfig.routes : { main_workflow_id: null, fallback_workflow_id: null, sub_type_routes: {} },
-    sub_type_profiles: isObject(adminConfig.sub_type_profiles) ? adminConfig.sub_type_profiles : {},
+    routes: effectiveRoutes,
+    sub_type_profiles: resolvedScenario?.sub_type_profiles || {},
     workflow_keys: getWorkflowKeyView(adminConfig),
-    workflow_prompts: isObject(adminConfig.workflow_prompts) ? adminConfig.workflow_prompts : {}
+    workflow_prompts: mergedPrompts
   }
 }
 
