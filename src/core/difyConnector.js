@@ -1,4 +1,5 @@
 const { buildPlannedKbHits } = require('./examRouter')
+const { buildDifyImageFiles } = require('./difyFiles')
 
 const DEFAULT_TIMEOUT_MS = 15_000
 
@@ -48,6 +49,8 @@ function resolveApiKey(cfg, workflowId) {
 }
 
 function buildDifyInput(payload, scenario, policy, traceId, tenantId, context) {
+  const files = buildDifyImageFiles(payload?.input)
+
   return {
     inputs: {
       scenario_id: scenario.scenario_id,
@@ -57,6 +60,7 @@ function buildDifyInput(payload, scenario, policy, traceId, tenantId, context) {
       workflow_hint: context.workflowId || null,
       kb_plan: context.knowledge || { enabled: false, kb_ids: [] },
       input: payload.input,
+      images: files,
       context: payload.context || {},
       options: payload.options || {},
       policy,
@@ -64,7 +68,8 @@ function buildDifyInput(payload, scenario, policy, traceId, tenantId, context) {
       retry_index: Number(context.retryIndex || 0)
     },
     response_mode: 'blocking',
-    user: `${getDifyConfig().userPrefix}:${tenantId || 'anonymous'}:${traceId}`
+    user: `${getDifyConfig().userPrefix}:${tenantId || 'anonymous'}:${traceId}`,
+    files
   }
 }
 

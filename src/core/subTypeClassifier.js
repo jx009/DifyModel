@@ -1,4 +1,5 @@
 const { detectExamSubTypeHeuristic } = require('./examRouter')
+const { buildDifyImageFiles } = require('./difyFiles')
 
 function parseClassifierMode() {
   return String(process.env.EXAM_SUBTYPE_CLASSIFIER_MODE || 'heuristic').toLowerCase()
@@ -46,16 +47,19 @@ async function classifyWithDify(payload, scenario, traceId) {
   const timer = setTimeout(() => controller.abort(), timeoutMs)
 
   try {
+    const files = buildDifyImageFiles(payload?.input)
     const body = {
       inputs: {
         input: payload.input || {},
+        images: files,
         context: payload.context || {},
         scenario_id: scenario?.scenario_id || null,
         classifier_hints: buildClassifierHints(scenario),
         trace_id: traceId
       },
       response_mode: 'blocking',
-      user: `classifier:${traceId}`
+      user: `classifier:${traceId}`,
+      files
     }
 
     const res = await fetch(`${baseUrl}/v1/workflows/run`, {
