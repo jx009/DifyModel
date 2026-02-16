@@ -48,6 +48,27 @@ This repository has completed:
 
 Note: you can override bind address via `HOST` (default: `127.0.0.1` in dev, `0.0.0.0` in prod).
 
+## Docker Deployment
+
+- Build image locally:
+  - `docker build -t dify-model:local .`
+- Run with Docker:
+  - `docker run --rm -p 8080:8080 --env-file .env dify-model:local`
+- Compose deployment:
+  - `docker compose up -d`
+- Deployment guide:
+  - `DOCKER_DEPLOY.md`
+
+## GitHub Actions (Auto Build + Push)
+
+- Workflow file: `.github/workflows/docker-build-push.yml`
+- Trigger:
+  - Push to `main`/`master`
+  - Push `v*` tags
+  - Manual workflow dispatch
+- Required repository secrets:
+  - `DOCKER_USERNAME`
+  - `DOCKER_PASSWORD`
 
 ## Smoke Test
 
@@ -62,4 +83,3 @@ Quick run:
 
 - Dify integration is available in Phase 3 and can fallback to mock when configured.
 - Dify true-stream bridging is still pending; current flow is event-driven SSE.
-"# DifyModel" 

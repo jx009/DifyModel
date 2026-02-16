@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  difymodel:
+    image: ${DOCKER_IMAGE:-your-dockerhub-username/dify-model:latest}
+    container_name: difymodel
+    restart: unless-stopped
+    ports:
+      - "${HOST_PORT:-8080}:8080"
+    env_file:
+      - .env
+    environment:
+      APP_ENV: ${APP_ENV:-prod}
+      HOST: 0.0.0.0
+      PORT: 8080
+      DATA_DIR: /app/data
+    volumes:
+      - difymodel_data:/app/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:8080/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  difymodel_data:
