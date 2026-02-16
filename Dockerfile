@@ -10,6 +10,7 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY configs ./configs
 COPY src ./src
 COPY scripts ./scripts
+COPY admin-web ./admin-web
 COPY index.js ./index.js
 
 RUN mkdir -p /app/data && chown -R node:node /app

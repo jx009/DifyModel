@@ -83,3 +83,19 @@ Quick run:
 
 - Dify integration is available in Phase 3 and can fallback to mock when configured.
 - Dify true-stream bridging is still pending; current flow is event-driven SSE.
+
+## Admin Console (Workflow Config + Test)
+
+- Enable in `.env`:
+  - `ADMIN_CONSOLE_ENABLED=true`
+  - `ADMIN_TOKEN=your_admin_token`
+  - `ADMIN_KEY_ENCRYPTION_SECRET=your_secret` (recommended for workflow key encryption at rest)
+- Open: `http://127.0.0.1:8080/admin`
+- Built-in features:
+  - Route + prompt_plan(strategy) config
+  - Workflow key/prompt config
+  - Config history rollback
+  - Test upload/run + SSE trace stream
+  - Admin action audit log (`data/audit/admin-actions.jsonl`)
+- Admin API smoke:
+  - `BASE_URL=http://127.0.0.1:8080 ADMIN_TOKEN=your_admin_token npm run test:admin:smoke`

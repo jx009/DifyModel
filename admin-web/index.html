@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DifyModel Admin Console</title>
+    <link rel="stylesheet" href="/admin/styles.css" />
+  </head>
+  <body>
+    <div class="bg-shape bg-shape-a"></div>
+    <div class="bg-shape bg-shape-b"></div>
+    <header class="topbar">
+      <div class="brand">
+        <h1>DifyModel Admin</h1>
+        <p>Workflow Config + Prompt Plan + Test Lab</p>
+      </div>
+      <div class="auth-box">
+        <input id="adminToken" type="password" placeholder="Admin Token" />
+        <button id="saveTokenBtn" class="btn btn-primary">保存 Token</button>
+      </div>
+    </header>
+
+    <main class="container">
+      <nav class="tabs">
+        <button class="tab active" data-tab="routes">01 路由配置</button>
+        <button class="tab" data-tab="strategy">02 PromptPlan 策略</button>
+        <button class="tab" data-tab="workflow">03 Key / Prompt</button>
+        <button class="tab" data-tab="test">04 在线测试</button>
+      </nav>
+
+      <section id="tab-routes" class="panel active">
+        <div class="panel-head">
+          <h2>SubType -> Workflow 路由</h2>
+          <button id="saveRoutesBtn" class="btn btn-primary">保存路由</button>
+        </div>
+        <div class="grid two">
+          <label>
+            主 workflow_id
+            <input id="mainWorkflowId" type="text" />
+          </label>
+          <label>
+            fallback_workflow_id
+            <input id="fallbackWorkflowId" type="text" />
+          </label>
+        </div>
+        <div id="routesList" class="list"></div>
+      </section>
+
+      <section id="tab-strategy" class="panel">
+        <div class="panel-head">
+          <h2>SubType PromptPlan / 路由信息</h2>
+          <button id="saveProfileBtn" class="btn btn-primary">保存当前 SubType</button>
+        </div>
+        <div class="grid two">
+          <label>
+            SubType
+            <select id="profileSubType"></select>
+          </label>
+          <label>
+            display_name
+            <input id="profileDisplayName" type="text" />
+          </label>
+        </div>
+        <div class="grid two">
+          <label>
+            workflow_id(可选)
+            <input id="profileWorkflowId" type="text" />
+          </label>
+          <label>
+            keywords(每行一个)
+            <textarea id="profileKeywords"></textarea>
+          </label>
+        </div>
+        <div class="check-grid">
+          <label><input id="requireImages" type="checkbox" /> require_images</label>
+          <label><input id="preferImages" type="checkbox" /> prefer_images</label>
+          <label><input id="imageOnlyDefault" type="checkbox" /> image_only_default</label>
+        </div>
+        <div class="grid three">
+          <label>
+            solving_steps(每行一条)
+            <textarea id="solvingSteps"></textarea>
+          </label>
+          <label>
+            prompt_focus(每行一条)
+            <textarea id="promptFocus"></textarea>
+          </label>
+          <label>
+            answer_constraints(每行一条)
+            <textarea id="answerConstraints"></textarea>
+          </label>
+        </div>
+      </section>
+
+      <section id="tab-workflow" class="panel">
+        <div class="panel-head">
+          <h2>Workflow Key / Prompt</h2>
+        </div>
+        <div class="grid two">
+          <label>
+            workflow_id
+            <select id="workflowIdSelect"></select>
+          </label>
+          <label>
+            当前 key 掩码
+            <input id="workflowKeyMasked" type="text" readonly />
+          </label>
+        </div>
+        <div class="grid two">
+          <label>
+            新 key
+            <input id="workflowKeyInput" type="password" />
+          </label>
+          <label class="btn-wrap">
+            <span>保存 key</span>
+            <button id="saveWorkflowKeyBtn" class="btn btn-primary">更新 Key</button>
+          </label>
+        </div>
+        <label>
+          Prompt 内容
+          <textarea id="workflowPromptInput" class="large"></textarea>
+        </label>
+        <button id="saveWorkflowPromptBtn" class="btn btn-primary">更新 Prompt</button>
+        <hr />
+        <div class="panel-head">
+          <h2>配置历史与回滚</h2>
+          <button id="refreshHistoryBtn" class="btn">刷新历史</button>
+        </div>
+        <div id="historyList" class="list"></div>
+      </section>
+
+      <section id="tab-test" class="panel">
+        <div class="panel-head">
+          <h2>在线测试</h2>
+          <button id="runTestBtn" class="btn btn-primary">运行测试</button>
+        </div>
+        <div class="grid two">
+          <label>
+            scenario_id
+            <input id="testScenarioId" type="text" value="exam_qa" />
+          </label>
+          <label>
+            workflow_id(可选)
+            <input id="testWorkflowId" type="text" />
+          </label>
+        </div>
+        <div class="grid two">
+          <label>
+            sub_type(可选)
+            <input id="testSubType" type="text" />
+          </label>
+          <label>
+            quality_tier
+            <select id="testQualityTier">
+              <option value="">(默认)</option>
+              <option value="fast">fast</option>
+              <option value="balanced">balanced</option>
+              <option value="strict">strict</option>
+            </select>
+          </label>
+        </div>
+        <label>
+          题目文本(可选)
+          <textarea id="testText"></textarea>
+        </label>
+        <div class="upload-box">
+          <input id="imageFileInput" type="file" accept="image/*" />
+          <button id="uploadImageBtn" class="btn">上传图片到 Dify</button>
+          <span id="uploadStatus"></span>
+        </div>
+        <label>
+          upload_file_ids (自动填充，可手工编辑，逗号分隔)
+          <input id="testUploadFileIds" type="text" />
+        </label>
+        <label>
+          响应结果
+          <textarea id="testResult" class="large" readonly></textarea>
+        </label>
+        <div class="panel-head">
+          <h2>SSE 进度流</h2>
+          <button id="startSseBtn" class="btn">监听当前 trace</button>
+        </div>
+        <input id="sseTraceId" type="text" placeholder="trace_id" />
+        <label>
+          事件流
+          <textarea id="sseEvents" class="large" readonly></textarea>
+        </label>
+      </section>
+    </main>
+
+    <footer class="status" id="statusBar">就绪</footer>
+    <script src="/admin/app.js"></script>
+  </body>
+</html>

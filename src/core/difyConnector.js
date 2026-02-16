@@ -1,7 +1,10 @@
 const { buildPlannedKbHits } = require('./examRouter')
 const { buildDifyImageFiles } = require('./difyFiles')
+const { AdminConfigStore } = require('./adminConfigStore')
+const { decryptSecret } = require('./adminSecrets')
 
 const DEFAULT_TIMEOUT_MS = 15_000
+const adminConfigStore = new AdminConfigStore()
 
 function makeProviderError(code, message, details) {
   const error = new Error(message)
@@ -42,6 +45,24 @@ function getDifyConfig() {
 }
 
 function resolveApiKey(cfg, workflowId) {
+  const adminConfig = adminConfigStore.getConfig()
+  const adminKeys = adminConfig && adminConfig.workflow_keys && typeof adminConfig.workflow_keys === 'object' ? adminConfig.workflow_keys : {}
+  const byWorkflowEncrypted = workflowId && adminKeys[workflowId] && typeof adminKeys[workflowId].encrypted === 'string'
+    ? decryptSecret(adminKeys[workflowId].encrypted)
+    : ''
+  const byWorkflowPlain = workflowId && adminKeys[workflowId] && typeof adminKeys[workflowId].value === 'string' ? adminKeys[workflowId].value.trim() : ''
+  const byWorkflow = (byWorkflowEncrypted || byWorkflowPlain || '').trim()
+  if (byWorkflow) {
+    return byWorkflow
+  }
+
+  const defaultEncrypted = adminKeys.default && typeof adminKeys.default.encrypted === 'string' ? decryptSecret(adminKeys.default.encrypted) : ''
+  const defaultPlain = adminKeys.default && typeof adminKeys.default.value === 'string' ? adminKeys.default.value : ''
+  const defaultAdmin = (defaultEncrypted || defaultPlain || '').trim()
+  if (defaultAdmin) {
+    return defaultAdmin
+  }
+
   if (workflowId && cfg.apiKeysByWorkflowId[workflowId]) {
     return cfg.apiKeysByWorkflowId[workflowId]
   }
@@ -228,5 +249,6 @@ async function callDifyWorkflow({ payload, scenario, policy, traceId, tenantId, 
 
 module.exports = {
   getDifyConfig,
-  callDifyWorkflow
+  callDifyWorkflow,
+  resolveApiKey
 }

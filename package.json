@@ -11,7 +11,8 @@
     "check:workflow": "node scripts/validate-workflow-manifest.js",
     "test:smoke": "bash scripts/smoke-test.sh",
     "test:smoke:docker": "BASE_URL=http://127.0.0.1:8080 bash scripts/smoke-test.sh",
-    "test:smoke:dify": "EXPECT_PROVIDER=dify bash scripts/smoke-test.sh"
+    "test:smoke:dify": "EXPECT_PROVIDER=dify bash scripts/smoke-test.sh",
+    "test:admin:smoke": "bash scripts/admin-smoke-test.sh"
   },
   "dependencies": {
     "ajv": "^8.18.0"

@@ -6,6 +6,7 @@ This document describes the one-click API smoke test for DifyModel.
 
 - Path: `scripts/smoke-test.sh`
 - Purpose: verify core contract endpoints after local start or Docker deployment.
+- Admin script: `scripts/admin-smoke-test.sh` (requires admin console enabled and `ADMIN_TOKEN`)
 
 ## Covered Endpoints
 
@@ -59,6 +60,13 @@ EXPECT_PROVIDER=dify npm run test:smoke:dify
 ```bash
 EXPECT_METRICS_ENABLED=true npm run test:smoke
 EXPECT_METRICS_ENABLED=false npm run test:smoke
+```
+
+### 7) Admin API smoke
+
+```bash
+ADMIN_CONSOLE_ENABLED=true ADMIN_TOKEN=your_admin_token npm run dev
+BASE_URL=http://127.0.0.1:8080 ADMIN_TOKEN=your_admin_token npm run test:admin:smoke
 ```
 
 ## Optional Environment Variables
