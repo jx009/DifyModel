@@ -973,9 +973,14 @@ async function handleAdminTestUpload(req, res, traceId) {
   const filename = typeof payload.filename === 'string' ? payload.filename : ''
   const contentType = typeof payload.content_type === 'string' ? payload.content_type : ''
   const user = typeof payload.user === 'string' ? payload.user : undefined
+  const workflowId = typeof payload.workflow_id === 'string' && payload.workflow_id.trim() ? payload.workflow_id.trim() : ''
 
   if (!base64.trim()) {
     sendJson(res, 400, errorEnvelope(traceId, 'INVALID_INPUT', 'base64 is required'))
+    return
+  }
+  if (!workflowId) {
+    sendJson(res, 400, errorEnvelope(traceId, 'INVALID_INPUT', 'workflow_id is required for upload'))
     return
   }
 
@@ -984,7 +989,8 @@ async function handleAdminTestUpload(req, res, traceId) {
       base64,
       filename,
       contentType,
-      user
+      user,
+      workflowId
     })
     logAdminAction({
       traceId,

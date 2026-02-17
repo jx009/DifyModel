@@ -18,6 +18,14 @@ function setStatus(text, isError = false) {
   el.style.color = isError ? '#a52424' : '#0a7a44'
 }
 
+function setBusy(show, text = '处理中...') {
+  const overlay = $('busyOverlay')
+  const label = $('busyText')
+  if (!overlay || !label) return
+  label.textContent = text
+  overlay.classList.toggle('hidden', !show)
+}
+
 function toLines(value) {
   if (!Array.isArray(value)) return ''
   return value.join('\n')
@@ -234,6 +242,8 @@ async function saveWorkflowPrompt() {
 async function uploadImage() {
   const file = $('imageFileInput').files && $('imageFileInput').files[0]
   if (!file) throw new Error('请先选择图片')
+  const workflowId = $('testWorkflowId').value.trim()
+  if (!workflowId) throw new Error('请先填写 workflow_id 再上传图片')
   const reader = new FileReader()
   const result = await new Promise((resolve, reject) => {
     reader.onload = () => resolve(reader.result)
@@ -242,15 +252,21 @@ async function uploadImage() {
   })
 
   $('uploadStatus').textContent = '上传中...'
-  const data = await api('/admin/api/test/upload', 'POST', {
-    base64: result,
-    filename: file.name,
-    content_type: file.type
-  })
-  state.uploadedFileIds.push(data.file_id)
-  $('testUploadFileIds').value = state.uploadedFileIds.join(',')
-  $('uploadStatus').textContent = `已上传: ${data.file_id}`
-  setStatus('图片上传成功')
+  setBusy(true, '正在上传图片到 Dify...')
+  try {
+    const data = await api('/admin/api/test/upload', 'POST', {
+      base64: result,
+      filename: file.name,
+      content_type: file.type,
+      workflow_id: workflowId
+    })
+    state.uploadedFileIds.push(data.file_id)
+    $('testUploadFileIds').value = state.uploadedFileIds.join(',')
+    $('uploadStatus').textContent = `已上传: ${data.file_id}`
+    setStatus('图片上传成功')
+  } finally {
+    setBusy(false)
+  }
 }
 
 async function runTest() {
@@ -270,10 +286,15 @@ async function runTest() {
       quality_tier: $('testQualityTier').value || undefined
     }
   }
-  const data = await api('/admin/api/test/run', 'POST', payload)
-  $('testResult').value = JSON.stringify(data, null, 2)
-  $('sseTraceId').value = data.trace_id || ''
-  setStatus(`测试完成 trace_id=${data.trace_id || '-'}`)
+  setBusy(true, '正在运行测试，请稍候...')
+  try {
+    const data = await api('/admin/api/test/run', 'POST', payload)
+    $('testResult').value = JSON.stringify(data, null, 2)
+    $('sseTraceId').value = data.trace_id || ''
+    setStatus(`测试完成 trace_id=${data.trace_id || '-'}`)
+  } finally {
+    setBusy(false)
+  }
 }
 
 function appendSseLine(line) {

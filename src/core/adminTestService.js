@@ -39,15 +39,15 @@ function parseBase64Image(input) {
   }
 }
 
-async function uploadImageToDify({ base64, filename, contentType, user }) {
+async function uploadImageToDify({ base64, filename, contentType, user, workflowId }) {
   const cfg = getDifyConfig()
   if (!cfg.enabled || !cfg.baseUrl) {
     throw makeError('UPSTREAM_ERROR', 'dify is not configured')
   }
 
-  const apiKey = resolveApiKey(cfg, null)
+  const apiKey = resolveApiKey(cfg, workflowId || null)
   if (!apiKey) {
-    throw makeError('WORKFLOW_NOT_FOUND', 'dify api key is not configured')
+    throw makeError('WORKFLOW_NOT_FOUND', `dify api key is not configured for workflow ${workflowId || 'default'}`)
   }
 
   const parsed = parseBase64Image(base64)

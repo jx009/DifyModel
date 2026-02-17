@@ -140,8 +140,8 @@
             <input id="testScenarioId" type="text" value="exam_qa" />
           </label>
           <label>
-            workflow_id(可选)
-            <input id="testWorkflowId" type="text" />
+            workflow_id(上传图片时必填)
+            <input id="testWorkflowId" type="text" placeholder="例如 wf_exam_common" />
           </label>
         </div>
         <div class="grid two">
@@ -189,6 +189,12 @@
     </main>
 
     <footer class="status" id="statusBar">就绪</footer>
+    <div id="busyOverlay" class="busy-overlay hidden">
+      <div class="busy-card">
+        <div class="spinner"></div>
+        <div id="busyText" class="busy-text">处理中...</div>
+      </div>
+    </div>
     <script src="/admin/app.js"></script>
   </body>
 </html>

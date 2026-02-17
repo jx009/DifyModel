@@ -328,6 +328,50 @@ hr {
   backdrop-filter: blur(8px);
 }
 
+.busy-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(12, 24, 26, 0.28);
+  backdrop-filter: blur(4px);
+  animation: fadeInUp 0.2s ease both;
+}
+
+.busy-overlay.hidden {
+  display: none;
+}
+
+.busy-card {
+  min-width: 220px;
+  padding: 20px 22px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #d8e3e0;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 3px solid #cde4e1;
+  border-top-color: var(--brand);
+  animation: spin 0.85s linear infinite;
+}
+
+.busy-text {
+  font-weight: 700;
+  color: #244241;
+  font-size: 14px;
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -356,6 +400,15 @@ hr {
   }
   to {
     transform: translateY(16px) translateX(6px);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 
