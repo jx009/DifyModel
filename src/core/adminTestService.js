@@ -1,6 +1,7 @@
 const { detectExamSubTypeHeuristic, resolveWorkflowId, buildSubTypePromptPlan, resolveKnowledgePlan } = require('./examRouter')
 const { buildDifyImageFiles } = require('./difyFiles')
 const { getDifyConfig, resolveApiKey } = require('./difyConnector')
+const { derivePolicy } = require('./policyEngine')
 
 function makeError(code, message, details) {
   const error = new Error(message)
@@ -183,14 +184,17 @@ async function runWorkflowTest({
   const knowledge = knowledgeManager.enrichPlan(knowledgeBasePlan)
 
   const promptPlan = buildSubTypePromptPlan(scenario, subType)
+  const derivedPolicy = derivePolicy({ options }, scenario)
+  const effectivePolicy = payload.policy && typeof payload.policy === 'object' ? payload.policy : derivedPolicy
   const overridePrompt = adminConfig?.workflow_prompts?.[workflowId]?.content || null
   const files = buildFilesFromPayload(input)
+  const retryIndex = Number.isFinite(Number(payload.retry_index)) ? Number(payload.retry_index) : 0
   const user = `admin-test:${tenantId || 'anonymous'}:${traceId}`
   const body = {
     inputs: {
       scenario_id: scenario.scenario_id,
       sub_type: subType,
-      sub_type_profile: scenario?.sub_type_profiles?.[subType] || null,
+      sub_type_profile: scenario?.sub_type_profiles?.[subType] || {},
       prompt_plan: promptPlan,
       workflow_hint: workflowId || null,
       prompt_override: overridePrompt,
@@ -199,7 +203,9 @@ async function runWorkflowTest({
       images: files,
       context: payload.context || {},
       options,
-      trace_id: traceId
+      policy: effectivePolicy,
+      trace_id: traceId,
+      retry_index: retryIndex
     },
     response_mode: 'blocking',
     user,
