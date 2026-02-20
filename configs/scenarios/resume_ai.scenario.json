@@ -15,8 +15,8 @@
   },
   "workflow_binding": {
     "provider": "dify",
-    "workflow_id": "wf_resume_main",
-    "fallback_workflow_id": "wf_resume_fallback",
+    "workflow_id": "wf_resume_import_parse",
+    "fallback_workflow_id": "wf_resume_import_parse",
     "sub_type_routes": {
       "import_parse": "wf_resume_import_parse",
       "section_optimize": "wf_resume_section_optimize",
@@ -151,7 +151,7 @@
       "import_parse": {
         "confidence_threshold": 0.78,
         "max_retries": 2,
-        "retry_mode": "fallback_workflow",
+        "retry_mode": "same_workflow",
         "retry_on_validation_fail": true
       },
       "section_optimize": {
@@ -163,13 +163,13 @@
       "full_optimize": {
         "confidence_threshold": 0.74,
         "max_retries": 1,
-        "retry_mode": "fallback_workflow",
+        "retry_mode": "same_workflow",
         "retry_on_validation_fail": true
       }
     }
   },
   "latency_budget": {
-    "total_ms": 12000,
+    "total_ms": 600000,
     "stage_budget_ms": {
       "routing": 300,
       "retrieval": 1200,
