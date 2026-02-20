@@ -38,6 +38,7 @@ function getDifyConfig() {
     baseUrl: (process.env.DIFY_BASE_URL || '').replace(/\/$/, ''),
     apiKey: process.env.DIFY_API_KEY || '',
     timeoutMs: Number(process.env.DIFY_TIMEOUT_MS || DEFAULT_TIMEOUT_MS),
+    disableTimeout: String(process.env.DIFY_DISABLE_TIMEOUT || '').toLowerCase() === 'true',
     fallbackToMock: String(process.env.DIFY_FALLBACK_TO_MOCK || 'true').toLowerCase() !== 'false',
     userPrefix: process.env.DIFY_USER_PREFIX || 'difymodel',
     apiKeysByWorkflowId: parseWorkflowApiKeyMap()
@@ -192,8 +193,9 @@ async function callDifyWorkflow({ payload, scenario, policy, traceId, tenantId, 
   }
 
   const timeoutMs = Number(timeoutMsOverride || cfg.timeoutMs)
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+  const shouldUseTimeout = !cfg.disableTimeout && Number.isFinite(timeoutMs) && timeoutMs > 0
+  const controller = shouldUseTimeout ? new AbortController() : null
+  const timeout = shouldUseTimeout ? setTimeout(() => controller.abort(), timeoutMs) : null
 
   const startedAt = Date.now()
   streamManager.publish(traceId, 'progress', {
@@ -214,7 +216,7 @@ async function callDifyWorkflow({ payload, scenario, policy, traceId, tenantId, 
         Authorization: `Bearer ${apiKey}`
       },
       body: JSON.stringify(body),
-      signal: controller.signal
+      signal: controller ? controller.signal : undefined
     })
 
     const rawText = await response.text()
@@ -243,7 +245,7 @@ async function callDifyWorkflow({ payload, scenario, policy, traceId, tenantId, 
     }
     throw error
   } finally {
-    clearTimeout(timeout)
+    if (timeout) clearTimeout(timeout)
   }
 }
 

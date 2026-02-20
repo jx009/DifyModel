@@ -176,6 +176,7 @@ async function executeOnePass({ provider, traceId, payload, scenario, policy, st
 async function runInferencePipeline({ traceId, payload, scenario, policy, streamManager, tenantId }) {
   const provider = scenario.workflow_binding && scenario.workflow_binding.provider
   const difyConfig = getDifyConfig()
+  const disableUpstreamTimeout = String(process.env.DIFY_DISABLE_TIMEOUT || '').toLowerCase() === 'true'
   const startedAt = Date.now()
   const deadline = startedAt + Number(policy.total_latency_budget_ms || 8000)
   const fallbackWorkflowId = scenario?.workflow_binding?.fallback_workflow_id || null
@@ -248,8 +249,12 @@ async function runInferencePipeline({ traceId, payload, scenario, policy, stream
       }
 
       // Apply remaining budget to upstream timeout to avoid exceeding total latency budget.
-      const remainingForUpstream = Math.max(800, deadline - Date.now())
-      executionContext.timeoutMsOverride = Math.min(difyConfig.timeoutMs, remainingForUpstream)
+      if (disableUpstreamTimeout) {
+        executionContext.timeoutMsOverride = null
+      } else {
+        const remainingForUpstream = Math.max(800, deadline - Date.now())
+        executionContext.timeoutMsOverride = Math.min(difyConfig.timeoutMs, remainingForUpstream)
+      }
 
       let result = await executeOnePass({
         provider,
@@ -350,7 +355,7 @@ async function runInferencePipeline({ traceId, payload, scenario, policy, stream
             workflowId: fallbackWorkflowId,
             retryIndex
           }
-          executionContextForFallbackWorkflow.timeoutMsOverride = Math.min(difyConfig.timeoutMs, Math.max(800, deadline - Date.now()))
+          executionContextForFallbackWorkflow.timeoutMsOverride = disableUpstreamTimeout ? null : Math.min(difyConfig.timeoutMs, Math.max(800, deadline - Date.now()))
           const fallbackWorkflowResult = await executeOnePass({
             provider,
             traceId,
