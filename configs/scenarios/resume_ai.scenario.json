@@ -1,0 +1,260 @@
+{
+  "scenario_id": "resume_ai",
+  "name": "Resume AI Assistant",
+  "enabled": true,
+  "version": "1.0.0",
+  "input_schema": {
+    "required_fields": [
+      "text"
+    ],
+    "allow_text": true,
+    "allow_images": false,
+    "allow_attachments": false,
+    "max_images": 0,
+    "max_text_length": 120000
+  },
+  "workflow_binding": {
+    "provider": "dify",
+    "workflow_id": "wf_resume_main",
+    "fallback_workflow_id": "wf_resume_fallback",
+    "sub_type_routes": {
+      "import_parse": "wf_resume_import_parse",
+      "section_optimize": "wf_resume_section_optimize",
+      "full_optimize": "wf_resume_full_optimize"
+    }
+  },
+  "sub_type_profiles": {
+    "import_parse": {
+      "display_name": "智能导入填空",
+      "workflow_id": "wf_resume_import_parse",
+      "classifier_hints": {
+        "keywords": [
+          "简历",
+          "教育经历",
+          "工作经历",
+          "项目经历",
+          "专业技能",
+          "自我评价"
+        ],
+        "require_images": false,
+        "prefer_images": false,
+        "image_only_default": false
+      },
+      "workflow_guidance": {
+        "solving_steps": [
+          "提取基础信息并识别简历模块",
+          "将教育、工作、项目经历结构化",
+          "输出与目标 schema 完全兼容的 JSON"
+        ],
+        "prompt_focus": [
+          "禁止编造信息",
+          "缺失字段保持空值或省略可选模块"
+        ],
+        "answer_constraints": [
+          "必须输出严格 JSON",
+          "字段命名与目标 schema 保持一致"
+        ]
+      }
+    },
+    "section_optimize": {
+      "display_name": "局部优化",
+      "workflow_id": "wf_resume_section_optimize",
+      "classifier_hints": {
+        "keywords": [
+          "优化",
+          "润色",
+          "改写",
+          "职责",
+          "描述"
+        ],
+        "require_images": false,
+        "prefer_images": false,
+        "image_only_default": false
+      },
+      "workflow_guidance": {
+        "solving_steps": [
+          "理解字段上下文与目标岗位",
+          "保持事实不变进行表达优化",
+          "输出原文、优化文案与优化理由"
+        ],
+        "prompt_focus": [
+          "提升专业度和结果导向",
+          "避免冗余与空泛表达"
+        ],
+        "answer_constraints": [
+          "只优化目标字段",
+          "不得改写姓名、电话、邮箱、时间线"
+        ]
+      }
+    },
+    "full_optimize": {
+      "display_name": "整份优化",
+      "workflow_id": "wf_resume_full_optimize",
+      "classifier_hints": {
+        "keywords": [
+          "全局优化",
+          "整份简历",
+          "优化建议",
+          "逐条建议"
+        ],
+        "require_images": false,
+        "prefer_images": false,
+        "image_only_default": false
+      },
+      "workflow_guidance": {
+        "solving_steps": [
+          "按模块扫描简历内容",
+          "识别可优化点并给出替换建议",
+          "按字段路径输出建议列表"
+        ],
+        "prompt_focus": [
+          "建议要可执行、可覆盖",
+          "优先提升信息密度与匹配度"
+        ],
+        "answer_constraints": [
+          "必须返回 suggestions 数组",
+          "每条建议包含 field_path 与 optimized"
+        ]
+      }
+    }
+  },
+  "knowledge_policy": {
+    "enabled": false,
+    "mode": "off",
+    "default_kb_ids": [],
+    "sub_type_kb_map": {},
+    "top_k": 5,
+    "rerank": false,
+    "max_context_chars": 12000
+  },
+  "quality_policy": {
+    "confidence_threshold": 0.72,
+    "enable_second_pass": true,
+    "validation_retry_on_fail": true,
+    "max_retries": 1,
+    "strict_output_validation": true,
+    "quality_tiers": {
+      "fast": {
+        "confidence_threshold": 0.66,
+        "max_retries": 0
+      },
+      "balanced": {
+        "confidence_threshold": 0.72,
+        "max_retries": 1
+      },
+      "strict": {
+        "confidence_threshold": 0.8,
+        "max_retries": 2
+      }
+    },
+    "sub_type_overrides": {
+      "import_parse": {
+        "confidence_threshold": 0.78,
+        "max_retries": 2,
+        "retry_mode": "fallback_workflow",
+        "retry_on_validation_fail": true
+      },
+      "section_optimize": {
+        "confidence_threshold": 0.7,
+        "max_retries": 1,
+        "retry_mode": "same_workflow",
+        "retry_on_validation_fail": true
+      },
+      "full_optimize": {
+        "confidence_threshold": 0.74,
+        "max_retries": 1,
+        "retry_mode": "fallback_workflow",
+        "retry_on_validation_fail": true
+      }
+    }
+  },
+  "latency_budget": {
+    "total_ms": 12000,
+    "stage_budget_ms": {
+      "routing": 300,
+      "retrieval": 1200,
+      "reasoning": 8500,
+      "postprocess": 1000,
+      "buffer": 1000
+    },
+    "on_timeout": "return_best_effort"
+  },
+  "output_schema": {
+    "required_fields": [
+      "scenario_id",
+      "sub_type",
+      "answer",
+      "evidence",
+      "confidence",
+      "trace_id"
+    ],
+    "field_types": {
+      "scenario_id": "string",
+      "sub_type": "string",
+      "answer": "string",
+      "evidence": "array<string>",
+      "confidence": "number",
+      "trace_id": "string"
+    }
+  },
+  "output_constraints": {
+    "defaults": {
+      "mode": "text",
+      "min_evidence": 1,
+      "require_evidence": true,
+      "enforce_sub_type_match": true
+    },
+    "sub_type_rules": {
+      "import_parse": {
+        "mode": "json",
+        "min_evidence": 1,
+        "json_root_type": "object",
+        "json_required_fields": [
+          "title",
+          "content",
+          "content.config",
+          "content.modules"
+        ],
+        "json_field_types": {
+          "title": "string",
+          "content": "object",
+          "content.config": "object",
+          "content.modules": "array"
+        }
+      },
+      "section_optimize": {
+        "mode": "json",
+        "min_evidence": 1,
+        "json_root_type": "object",
+        "json_required_fields": [
+          "module_id",
+          "field_path",
+          "original",
+          "optimized",
+          "reason"
+        ],
+        "json_field_types": {
+          "module_id": "string",
+          "field_path": "string",
+          "original": "string",
+          "optimized": "string",
+          "reason": "string"
+        }
+      },
+      "full_optimize": {
+        "mode": "json",
+        "min_evidence": 1,
+        "json_root_type": "object",
+        "json_required_fields": [
+          "suggestions"
+        ],
+        "json_field_types": {
+          "suggestions": "array"
+        },
+        "json_array_min_items": {
+          "suggestions": 0
+        }
+      }
+    }
+  }
+}

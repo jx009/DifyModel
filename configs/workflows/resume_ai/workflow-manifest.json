@@ -1,0 +1,29 @@
+{
+  "scenario_id": "resume_ai",
+  "version": "1.0.0",
+  "workflows": [
+    {
+      "sub_type": "import_parse",
+      "workflow_id": "wf_resume_import_parse",
+      "prompt_template_file": "import_parse.prompt.md"
+    },
+    {
+      "sub_type": "section_optimize",
+      "workflow_id": "wf_resume_section_optimize",
+      "prompt_template_file": "section_optimize.prompt.md"
+    },
+    {
+      "sub_type": "full_optimize",
+      "workflow_id": "wf_resume_full_optimize",
+      "prompt_template_file": "full_optimize.prompt.md"
+    }
+  ],
+  "output_contract": {
+    "required_fields": [
+      "answer",
+      "evidence",
+      "confidence",
+      "sub_type"
+    ]
+  }
+}

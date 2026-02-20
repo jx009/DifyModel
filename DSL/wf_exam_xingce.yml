@@ -1,0 +1,474 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: workflow
+  name: wf_exam_xingce
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/volcengine_maas:0.0.44@229e7258feb20783ba38bbfd733cd57ad40b9d90d2ab8f69c05bf12f089c04f0
+    version: null
+kind: app
+version: 0.6.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        attachment_image_file_size_limit: 2
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        file_upload_limit: 20
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        single_chunk_attachment_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: code
+      id: 1771244580952-source-1771247966085-target
+      selected: false
+      source: '1771244580952'
+      sourceHandle: source
+      target: '1771247966085'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: 1771247966085-source-1771246015804-target
+      selected: false
+      source: '1771247966085'
+      sourceHandle: source
+      target: '1771246015804'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: 1771246015804-source-1771248578594-target
+      selected: false
+      source: '1771246015804'
+      sourceHandle: source
+      target: '1771248578594'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: 用户输入
+        type: start
+        variables:
+        - default: unknown
+          hint: ''
+          label: 子题型
+          max_length: 64
+          options: []
+          placeholder: ''
+          required: true
+          type: text-input
+          variable: sub_type
+        - default: ''
+          hint: ''
+          label: 子题型画像
+          json_schema:
+            type: object
+          options: []
+          placeholder: ''
+          required: false
+          type: json_object
+          variable: sub_type_profile
+        - default: ''
+          hint: ''
+          json_schema:
+            type: object
+          label: 提示计划
+          options: []
+          placeholder: ''
+          required: true
+          type: json_object
+          variable: prompt_plan
+        - default: exam_qa
+          hint: ''
+          label: 场景ID
+          max_length: 64
+          options: []
+          placeholder: ''
+          required: true
+          type: text-input
+          variable: scenario_id
+        - default: ''
+          hint: ''
+          label: 工作流提示
+          max_length: 128
+          options: []
+          placeholder: ''
+          required: false
+          type: text-input
+          variable: workflow_hint
+        - default: ''
+          hint: ''
+          json_schema:
+            type: object
+          label: 知识计划
+          options: []
+          placeholder: ''
+          required: true
+          type: json_object
+          variable: kb_plan
+        - default: ''
+          hint: ''
+          json_schema:
+            type: object
+          label: 用户输入
+          options: []
+          placeholder: ''
+          required: true
+          type: json_object
+          variable: input
+        - default: ''
+          hint: ''
+          json_schema:
+            type: object
+          label: 上下文
+          options: []
+          placeholder: ''
+          required: true
+          type: json_object
+          variable: context
+        - default: ''
+          hint: ''
+          label: 调用选项
+          json_schema:
+            type: object
+          options: []
+          placeholder: ''
+          required: true
+          type: json_object
+          variable: options
+        - default: ''
+          hint: ''
+          label: 策略参数
+          json_schema:
+            type: object
+          options: []
+          placeholder: ''
+          required: true
+          type: json_object
+          variable: policy
+        - default: ''
+          hint: ''
+          label: 跟踪ID
+          max_length: 128
+          options: []
+          placeholder: ''
+          required: true
+          type: text-input
+          variable: trace_id
+        - default: '0'
+          hint: ''
+          label: 重试次数
+          options: []
+          placeholder: ''
+          required: true
+          type: number
+          variable: retry_index
+        - allowed_file_extensions: []
+          allowed_file_types:
+          - image
+          allowed_file_upload_methods:
+          - local_file
+          - remote_url
+          default: ''
+          hint: ''
+          label: _images
+          max_length: 5
+          options: []
+          placeholder: ''
+          required: true
+          type: file-list
+          variable: images
+      height: 420
+      id: '1771244580952'
+      position:
+        x: 298
+        y: 180
+      positionAbsolute:
+        x: 298
+        y: 180
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        model:
+          completion_params:
+            temperature: 0.2
+            top_p: 1
+          mode: chat
+          name: Doubao-Seed-1.6
+          provider: langgenius/volcengine_maas/volcengine_maas
+        prompt_config:
+          jinja2_variables: []
+        prompt_template:
+        - edition_type: basic
+          id: ec3273c3-1796-4760-884b-550bad7a57b3
+          role: system
+          text: "  你是行测题专家。请基于以下输入作答，并严格只输出 JSON： {{#1771247966085.result#}}     \
+            \                                                                    \
+            \                                                                    \
+            \                                     \n  额外要求：本工作流 sub_type 固定为 xingce。\
+            \   "
+        reasoning_format: tagged
+        selected: true
+        structured_output:
+          schema:
+            additionalProperties: false
+            properties:
+              answer:
+                minLength: 1
+                type: string
+              confidence:
+                maximum: 1
+                minimum: 0
+                type: number
+              evidence:
+                items:
+                  minLength: 1
+                  type: string
+                minItems: 1
+                type: array
+              sub_type:
+                minLength: 1
+                type: string
+            required:
+            - answer
+            - evidence
+            - confidence
+            - sub_type
+            type: object
+        structured_output_enabled: true
+        title: LLM
+        type: llm
+        vision:
+          configs:
+            detail: high
+            variable_selector:
+            - '1771244580952'
+            - images
+          enabled: true
+      height: 87
+      id: '1771246015804'
+      position:
+        x: 959
+        y: 201
+      positionAbsolute:
+        x: 959
+        y: 201
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        code: "function toJsonText(v, fallback = \"{}\") {\n    if (v === null ||\
+          \ v === undefined) return fallback;\n    if (typeof v === \"string\") return\
+          \ v;\n    try {\n        return JSON.stringify(v);\n    } catch(e) {\n \
+          \       return fallback;\n    }\n}\n\nfunction main({\n    scenario_id,\n\
+          \    sub_type,\n    sub_type_profile,\n    prompt_plan,\n    workflow_hint,\n\
+          \    kb_plan,\n    input,\n    context,\n    options,\n    policy,\n   \
+          \ trace_id,\n    retry_index\n}) {\n    const text = `scenario_id: $ {\n\
+          \        scenario_id || \"exam_qa\"\n    }\n    sub_type: $ {\n        sub_type\
+          \ || \"unknown\"\n    }\n    sub_type_profile: $ {\n        toJsonText(sub_type_profile)\n\
+          \    }\n    prompt_plan: $ {\n        toJsonText(prompt_plan)\n    }\n \
+          \   workflow_hint: $ {\n        workflow_hint || \"\"\n    }\n    kb_plan:\
+          \ $ {\n        toJsonText(kb_plan)\n    }\n    input: $ {\n        toJsonText(input)\n\
+          \    }\n    context: $ {\n        toJsonText(context)\n    }\n    options:\
+          \ $ {\n        toJsonText(options)\n    }\n    policy: $ {\n        toJsonText(policy)\n\
+          \    }\n    trace_id: $ {\n        trace_id || \"\"\n    }\n    retry_index:\
+          \ $ {\n        String(retry_index ? ?0)\n    }`;\n\n    return {\n     \
+          \   result: text\n    };\n}"
+        code_language: javascript
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 代码执行
+        type: code
+        variables:
+        - value_selector:
+          - '1771244580952'
+          - scenario_id
+          value_type: string
+          variable: scenario_id
+        - value_selector:
+          - '1771244580952'
+          - sub_type
+          value_type: string
+          variable: sub_type
+        - value_selector:
+          - '1771244580952'
+          - sub_type_profile
+          value_type: object
+          variable: sub_type_profile
+        - value_selector:
+          - '1771244580952'
+          - prompt_plan
+          value_type: object
+          variable: prompt_plan
+        - value_selector:
+          - '1771244580952'
+          - workflow_hint
+          value_type: string
+          variable: workflow_hint
+        - value_selector:
+          - '1771244580952'
+          - kb_plan
+          value_type: object
+          variable: kb_plan
+        - value_selector:
+          - '1771244580952'
+          - input
+          value_type: object
+          variable: input
+        - value_selector:
+          - '1771244580952'
+          - context
+          value_type: object
+          variable: context
+        - value_selector:
+          - '1771244580952'
+          - options
+          value_type: object
+          variable: options
+        - value_selector:
+          - '1771244580952'
+          - policy
+          value_type: object
+          variable: policy
+        - value_selector:
+          - '1771244580952'
+          - trace_id
+          value_type: string
+          variable: trace_id
+        - value_selector:
+          - '1771244580952'
+          - retry_index
+          value_type: number
+          variable: retry_index
+      height: 51
+      id: '1771247966085'
+      position:
+        x: 648
+        y: 201
+      positionAbsolute:
+        x: 648
+        y: 201
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    - data:
+        outputs:
+        - value_selector:
+          - '1771246015804'
+          - structured_output
+          - answer
+          value_type: object
+          variable: answer
+        - value_selector:
+          - '1771246015804'
+          - structured_output
+          - evidence
+          value_type: object
+          variable: evidence
+        - value_selector:
+          - '1771246015804'
+          - structured_output
+          - confidence
+          value_type: object
+          variable: confidence
+        - value_selector:
+          - '1771246015804'
+          - structured_output
+          - sub_type
+          value_type: object
+          variable: sub_type
+        selected: false
+        title: 输出
+        type: end
+      height: 166
+      id: '1771248578594'
+      position:
+        x: 1260
+        y: 201
+      positionAbsolute:
+        x: 1260
+        y: 201
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 241
+    viewport:
+      x: -60
+      y: 127
+      zoom: 1
+  rag_pipeline_variables: []
