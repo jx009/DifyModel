@@ -63,6 +63,19 @@ function mergeSubTypeProfiles(baseProfiles, overrideProfiles) {
   return merged
 }
 
+
+function getAdminOverrideScenarioSet() {
+  const raw = String(process.env.ADMIN_ROUTE_OVERRIDE_SCENARIOS || 'exam_qa').trim()
+  if (!raw) return new Set(['exam_qa'])
+  return new Set(raw.split(',').map((x) => x.trim()).filter(Boolean))
+}
+
+function shouldApplyAdminOverridesForScenario(scenarioId) {
+  if (typeof scenarioId !== 'string' || !scenarioId.trim()) return false
+  const scoped = getAdminOverrideScenarioSet()
+  return scoped.has(scenarioId.trim())
+}
+
 function applyRouteOverrides(workflowBinding, routesOverride) {
   const binding = isObject(workflowBinding) ? { ...workflowBinding } : {}
   const routes = isObject(binding.sub_type_routes) ? { ...binding.sub_type_routes } : {}
@@ -89,6 +102,10 @@ function applyRouteOverrides(workflowBinding, routesOverride) {
 function resolveScenarioWithAdminOverrides(scenario, adminConfig) {
   if (!isObject(scenario)) return null
   const cfg = isObject(adminConfig) ? adminConfig : {}
+
+  if (!shouldApplyAdminOverridesForScenario(scenario.scenario_id)) {
+    return { ...scenario }
+  }
 
   const merged = {
     ...scenario,
